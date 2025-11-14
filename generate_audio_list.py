@@ -1,31 +1,18 @@
 import os
 import json
 
-# Path to your audio folder
-audio_folder = os.path.join("audio_files")  # your folder name
-
-# Read existing JSON if it exists
+audio_folder = "audio_files"
 json_path = "audio-list.json"
-if os.path.exists(json_path):
-    with open(json_path, "r") as f:
-        existing_files = json.load(f)
-else:
-    existing_files = []
 
-# List all audio files (.mp3, .mpeg, .mp4)
-audio_files = [f"audio_files/{f}" for f in os.listdir(audio_folder)
-               if f.lower().endswith(('.mp3', '.mpeg', '.mp4'))]
+# List all audio files currently in the folder
+audio_files = [f"audio_files/" + f for f in os.listdir(audio_folder)
+               if f.lower().endswith(('.mp3', '.mpeg', '.mp4', '.wav', '.ogg', '.m4a'))]
 
-# Add only new files
-for f in audio_files:
-    if f not in existing_files:
-        existing_files.append(f)
+# Sort alphabetically
+audio_files.sort()
 
-# Sort alphabetically (optional)
-existing_files.sort()
-
-# Save back to JSON
+# Save to JSON (overwrites old JSON)
 with open(json_path, "w") as f:
-    json.dump(existing_files, f, indent=4)
+    json.dump(audio_files, f, indent=4)
 
-print(f"Updated {json_path} with {len(existing_files)} total files.")
+print(f"Updated {json_path} with {len(audio_files)} total files.")
