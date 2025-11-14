@@ -1,5 +1,6 @@
 name: Deploy Thursday Audio
 
+# Run automatically on pushes to main, and can be triggered manually
 on:
   push:
     branches: ["main"]
@@ -15,26 +16,34 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+
     steps:
+      # 1️⃣ Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
 
+      # 3️⃣ Install dependencies if any
       - name: Install dependencies
-        run: pip install -r requirements.txt || echo "No requirements file"
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run generate_audio_list.py
+      # 4️⃣ Run your generate_audio_list.py script
+      - name: Generate audio-list.json
         run: python generate_audio_list.py
 
+      # 5️⃣ Upload all repository files as artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
+      # 6️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
