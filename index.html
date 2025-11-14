@@ -4,51 +4,33 @@
     <meta charset="UTF-8">
     <title>Thursday Audio</title>
     <style>
-        /* Body styling */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e0f7fa, #fffde7);
-            margin: 0;
+            font-family: Arial, sans-serif;
             padding: 20px;
-            color: #333;
+            background: #f0f4f8;
         }
-
-        /* Heading */
         h1 {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.5rem;
-            color: #00796b;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            color: #333;
         }
-
-        /* Audio block styling */
         .audio-block {
-            background: #ffffffcc;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 12px;
-            max-width: 600px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
         .audio-block:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+            transform: scale(1.02);
         }
-
-        /* Audio title */
         .title {
-            font-weight: 600;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-            color: #004d40;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 18px;
         }
-
-        /* Audio player styling */
         audio {
             width: 100%;
-            outline: none;
         }
     </style>
 </head>
@@ -58,48 +40,49 @@
 <div id="audio-container"></div>
 
 <script>
-fetch('audio-list.json')
+fetch('audio-list.json?v=' + new Date().getTime()) // cache-busting
 .then(response => response.json())
 .then(files => {
     const container = document.getElementById('audio-container');
+    const pastelColors = ['#FFDEE9', '#B5FFFC', '#FFF6B5', '#D1FFD6', '#E0D4FF']; // soothing colors
 
     files.forEach((file, index) => {
         const block = document.createElement('div');
         block.className = 'audio-block';
+        block.style.background = pastelColors[index % pastelColors.length];
 
         const title = document.createElement('div');
         title.className = 'title';
-        title.textContent = `Thursday Audio – Week ${index + 1}`;
+        title.textContent = `Thursday Audio – Week ${index+1}`;
         block.appendChild(title);
 
         const audio = document.createElement('audio');
         audio.controls = true;
 
         const source = document.createElement('source');
+        source.src = file;
 
-        // Encode file path to handle spaces and parentheses
-        source.src = encodeURI(file);
-
-        // Detect type from extension
+        // Detect file type automatically (audio-only mp4 included)
         const ext = file.split('.').pop().toLowerCase();
         if (ext === 'mp3') {
             source.type = 'audio/mp3';
+        } else if (ext === 'mpeg') {
+            source.type = 'audio/mpeg';
+        } else if (ext === 'mp4') {
+            source.type = 'audio/mp4';
         } else if (ext === 'wav') {
             source.type = 'audio/wav';
         } else if (ext === 'ogg') {
             source.type = 'audio/ogg';
-        } else if (ext === 'm4a') {
-            source.type = 'audio/mp4';
         } else {
             source.type = 'audio/mpeg'; // fallback
-        } 
+        }
 
         audio.appendChild(source);
         block.appendChild(audio);
         container.appendChild(block);
     });
-})
-.catch(err => console.error('Failed to load audio files:', err));
+});
 </script>
 
 </body>
