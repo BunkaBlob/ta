@@ -44,7 +44,7 @@ fetch('audio-list.json?v=' + new Date().getTime()) // cache-busting
 .then(response => response.json())
 .then(files => {
     const container = document.getElementById('audio-container');
-    const pastelColors = ['#FFDEE9', '#B5FFFC', '#FFF6B5', '#D1FFD6', '#E0D4FF']; // soothing colors
+    const pastelColors = ['#FFDEE9', '#B5FFFC', '#FFF6B5', '#D1FFD6', '#E0D4FF'];
 
     files.forEach((file, index) => {
         const block = document.createElement('div');
@@ -62,21 +62,13 @@ fetch('audio-list.json?v=' + new Date().getTime()) // cache-busting
         const source = document.createElement('source');
         source.src = file;
 
-        // Detect file type automatically (audio-only mp4 included)
         const ext = file.split('.').pop().toLowerCase();
-        if (ext === 'mp3') {
-            source.type = 'audio/mp3';
-        } else if (ext === 'mpeg') {
-            source.type = 'audio/mpeg';
-        } else if (ext === 'mp4') {
-            source.type = 'audio/mp4';
-        } else if (ext === 'wav') {
-            source.type = 'audio/wav';
-        } else if (ext === 'ogg') {
-            source.type = 'audio/ogg';
-        } else {
-            source.type = 'audio/mpeg'; // fallback
-        }
+        if (ext === 'mp3') source.type = 'audio/mp3';
+        else if (ext === 'mpeg') source.type = 'audio/mpeg';
+        else if (ext === 'mp4') source.type = 'audio/mp4';
+        else if (ext === 'wav') source.type = 'audio/wav';
+        else if (ext === 'ogg') source.type = 'audio/ogg';
+        else source.type = 'audio/mpeg';
 
         audio.appendChild(source);
         block.appendChild(audio);

@@ -23,14 +23,14 @@ jobs:
         with:
           python-version: "3.x"
 
-      # 3️⃣ Install dependencies if needed
+      # 3️⃣ Install dependencies (if any)
       - run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       # 4️⃣ Update JSON automatically
       - run: python generate_audio_list.py
 
-      # 5️⃣ Commit updated JSON automatically if changed
+      # 5️⃣ Commit JSON automatically if changed
       - run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
