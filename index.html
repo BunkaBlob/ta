@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thursday Audio</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+        h1 { text-align: center; margin-bottom: 30px; }
+        .audio-block {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .title { font-weight: bold; margin-bottom: 8px; font-size: 18px; }
+        audio { width: 100%; }
+    </style>
+</head>
+<body>
+
+<h1>Thursday Audio Files</h1>
+<div id="audio-container"></div>
+
+<script>
+fetch('audio-list.json')
+.then(response => response.json())
+.then(files => {
+    const container = document.getElementById('audio-container');
+    files.forEach((file, index) => {
+        const block = document.createElement('div');
+        block.className = 'audio-block';
+
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = `Thursday Audio – Week ${index+1}`;
+        block.appendChild(title);
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+
+        const source = document.createElement('source');
+        source.src = file;
+
+        // Detect file type automatically
+        const ext = file.split('.').pop().toLowerCase();
+        if (ext === 'mp3') {
+            source.type = 'audio/mp3';
+        } else if (ext === 'mpeg') {
+            source.type = 'audio/mpeg';
+        } else {
+            source.type = 'audio/mpeg'; // fallback
+        }
+
+        audio.appendChild(source);
+        block.appendChild(audio);
+        container.appendChild(block);
+    });
+});
+</script>
+
+</body>
+</html>
