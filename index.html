@@ -4,17 +4,52 @@
     <meta charset="UTF-8">
     <title>Thursday Audio</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-        h1 { text-align: center; margin-bottom: 30px; }
-        .audio-block {
-            background: white;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        /* Body styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #fffde7);
+            margin: 0;
+            padding: 20px;
+            color: #333;
         }
-        .title { font-weight: bold; margin-bottom: 8px; font-size: 18px; }
-        audio { width: 100%; }
+
+        /* Heading */
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            color: #00796b;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Audio block styling */
+        .audio-block {
+            background: #ffffffcc;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 12px;
+            max-width: 600px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .audio-block:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        /* Audio title */
+        .title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            color: #004d40;
+        }
+
+        /* Audio player styling */
+        audio {
+            width: 100%;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -27,36 +62,44 @@ fetch('audio-list.json')
 .then(response => response.json())
 .then(files => {
     const container = document.getElementById('audio-container');
+
     files.forEach((file, index) => {
         const block = document.createElement('div');
         block.className = 'audio-block';
 
         const title = document.createElement('div');
         title.className = 'title';
-        title.textContent = `Thursday Audio – Week ${index+1}`;
+        title.textContent = `Thursday Audio – Week ${index + 1}`;
         block.appendChild(title);
 
         const audio = document.createElement('audio');
         audio.controls = true;
 
         const source = document.createElement('source');
-        source.src = file;
 
-        // Detect file type automatically
+        // Encode file path to handle spaces and parentheses
+        source.src = encodeURI(file);
+
+        // Detect type from extension
         const ext = file.split('.').pop().toLowerCase();
         if (ext === 'mp3') {
             source.type = 'audio/mp3';
-        } else if (ext === 'mpeg') {
-            source.type = 'audio/mpeg';
+        } else if (ext === 'wav') {
+            source.type = 'audio/wav';
+        } else if (ext === 'ogg') {
+            source.type = 'audio/ogg';
+        } else if (ext === 'm4a') {
+            source.type = 'audio/mp4';
         } else {
             source.type = 'audio/mpeg'; // fallback
-        }
+        } 
 
         audio.appendChild(source);
         block.appendChild(audio);
         container.appendChild(block);
     });
-});
+})
+.catch(err => console.error('Failed to load audio files:', err));
 </script>
 
 </body>
