@@ -2,22 +2,20 @@ name: Deploy Thursday Audio
 
 on:
   push:
-    branches: ["main"]   # runs automatically on pushes to main
-  workflow_dispatch:      # allows manual run from GitHub
+    branches: ["main"]
+  workflow_dispatch:  # allows manual run if needed
 
 permissions:
-  contents: read
+  contents: write  # needed to commit JSON changes
   pages: write
   id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
 
     steps:
-      # 1️⃣ Checkout your repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -27,22 +25,30 @@ jobs:
         with:
           python-version: "3.x"
 
-      # 3️⃣ Install dependencies if needed
+      # 3️⃣ Install dependencies if any
       - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # 4️⃣ Run your Python script to update audio-list.json
+      # 4️⃣ Run Python script to update JSON
       - name: Update audio list
         run: python generate_audio_list.py
 
-      # 5️⃣ Upload all files to GitHub Pages
+      # 5️⃣ Commit updated JSON if changed
+      - name: Commit updated audio-list.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add audio-list.json
+          git diff-index --quiet HEAD || git commit -m "Update audio-list.json automatically"
+          git push
+
+      # 6️⃣ Deploy to GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      # 6️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
