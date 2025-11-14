@@ -25,9 +25,9 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt || echo "No requirements file found"
+        run: pip install -r requirements.txt || echo "No requirements file"
 
-      - name: Generate audio-list.json
+      - name: Run generate_audio_list.py
         run: python generate_audio_list.py
 
       - name: Upload artifact
