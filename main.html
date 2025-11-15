@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QURAN_JOURNEY</title>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            animation: fadeBg 10s ease infinite alternate;
+        }
+
+        @keyframes fadeBg {
+            from { background: linear-gradient(135deg, #d4fc79, #96e6a1); }
+            to { background: linear-gradient(135deg, #84fab0, #8fd3f4); }
+        }
+
+        nav {
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        nav a {
+            margin: 0 10px;
+            text-decoration:none;
+            padding:12px 25px;
+            background: rgba(255,255,255,0.35);
+            border-radius:10px;
+            color:#333;
+            font-weight:600;
+            backdrop-filter: blur(8px);
+            transition:0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.8);
+            transform: scale(1.05);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #222;
+            font-size: 38px;
+            animation: fadeIn 1s ease;
+        }
+
+        .audio-block {
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 18px;
+            backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.35);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.25s, box-shadow 0.25s;
+            animation: fadeUp 0.8s ease;
+        }
+
+        .audio-block:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+
+        .title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        audio {
+            width: 100%;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform: translateY(40px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity:0; }
+            to { opacity:1; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+</nav>
+
+<h1>QURAN JOURNEY AUDIOS</h1>
+<div id="audio-container"></div>
+
+<script>
+fetch('audio-list.json?v=' + new Date().getTime())
+.then(response => response.json())
+.then(files => {
+    const container = document.getElementById('audio-container');
+    const pastelColors = ['#FFDEE9', '#B5FFFC', '#FFF6B5', '#D1FFD6', '#E0D4FF'];
+
+    files.forEach((file, index) => {
+        const block = document.createElement('div');
+        block.className = 'audio-block';
+        block.style.background = pastelColors[index % pastelColors.length] + "55";
+
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = `Thursday Audio – Week ${index+1}`;
+        block.appendChild(title);
+
+        const audio = document.createElement('audio');
+        audio.controls = true;
+
+        const source = document.createElement('source');
+        source.src = file;
+
+        const ext = file.split('.').pop().toLowerCase();
+        if (ext === 'mp3') source.type = 'audio/mp3';
+        else if (ext === 'mpeg') source.type = 'audio/mpeg';
+        else if (ext === 'mp4') source.type = 'audio/mp4';
+        else if (ext === 'wav') source.type = 'audio/wav';
+        else if (ext === 'ogg') source.type = 'audio/ogg';
+        else source.type = 'audio/mpeg';
+
+        audio.appendChild(source);
+        block.appendChild(audio);
+        container.appendChild(block);
+    });
+});
+</script>
+
+</body>
+</html>
