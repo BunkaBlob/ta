@@ -1,110 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>QURAN_JOURNEY</title>
+<meta charset="UTF-8">
+<title>QURAN JOURNEY - Audios</title>
+<style>
+body {
+    margin:0; padding:0;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#0b1a38; color:#f5e0a1;
+    transition: background 0.5s, color 0.5s;
+    overflow-x:hidden;
+}
+h1 { text-align:center; margin:30px 0; font-size:2.5em; letter-spacing:1px; }
+nav { text-align:center; margin-bottom:20px; }
+.audio-block {
+    border-radius:12px; padding:20px; margin:15px auto; max-width:700px;
+    background: rgba(245,224,161,0.1);
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.audio-block:hover { transform: scale(1.03); box-shadow:0 8px 30px rgba(245,224,161,0.5); }
+.title { font-weight:bold; margin-bottom:10px; font-size:1.2em; }
+audio { width:100%; border-radius:8px; }
 
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            padding: 20px;
-            background: linear-gradient(135deg, #d4fc79, #96e6a1);
-            animation: fadeBg 10s ease infinite alternate;
-        }
+.btn {
+    display:inline-block; padding:12px 30px; margin:10px;
+    font-weight:bold; font-size:1em; color:#f5e0a1;
+    border:2px solid #f5e0a1; border-radius:50px;
+    background:transparent; cursor:pointer; position:relative; overflow:hidden;
+    transition: color 0.3s, border-color 0.3s;
+}
+.btn::before {
+    content:''; position:absolute; top:-50%; left:-50%;
+    width:200%; height:200%; background:rgba(245,224,161,0.3);
+    transform:rotate(45deg) translate(-100%,-100%); transition:0.5s; z-index:0;
+}
+.btn:hover::before { transform:rotate(45deg) translate(0,0); }
+.btn span { position:relative; z-index:1; }
 
-        @keyframes fadeBg {
-            from { background: linear-gradient(135deg, #d4fc79, #96e6a1); }
-            to { background: linear-gradient(135deg, #84fab0, #8fd3f4); }
-        }
+.light-mode { background:#f5e0a1; color:#0b1a38; }
+.light-mode .audio-block { background: rgba(11,26,56,0.1); }
+.light-mode .btn { color:#0b1a38; border-color:#0b1a38; }
+.light-mode .btn::before { background:rgba(11,26,56,0.2); }
 
-        nav {
-            text-align:center;
-            margin-bottom:25px;
-        }
-
-        nav a {
-            margin: 0 10px;
-            text-decoration:none;
-            padding:12px 25px;
-            background: rgba(255,255,255,0.35);
-            border-radius:10px;
-            color:#333;
-            font-weight:600;
-            backdrop-filter: blur(8px);
-            transition:0.3s;
-        }
-
-        nav a:hover {
-            background: rgba(255,255,255,0.8);
-            transform: scale(1.05);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #222;
-            font-size: 38px;
-            animation: fadeIn 1s ease;
-        }
-
-        .audio-block {
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 18px;
-            backdrop-filter: blur(8px);
-            background: rgba(255,255,255,0.35);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transition: transform 0.25s, box-shadow 0.25s;
-            animation: fadeUp 0.8s ease;
-        }
-
-        .audio-block:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
-        }
-
-        .title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        audio {
-            width: 100%;
-        }
-
-        @keyframes fadeUp {
-            from { opacity:0; transform: translateY(40px); }
-            to { opacity:1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity:0; }
-            to { opacity:1; }
-        }
-    </style>
+/* Particles */
+.particle {
+    position: fixed; width:4px; height:4px; background:#f5e0a1;
+    border-radius:50%; pointer-events:none; animation:float 10s linear infinite;
+    opacity:0.7;
+}
+@keyframes float {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity:0.7; }
+    50% { transform: translateY(-600px) translateX(50px) rotate(180deg); opacity:0.4; }
+    100% { transform: translateY(-1200px) translateX(-50px) rotate(360deg); opacity:0; }
+}
+</style>
 </head>
 <body>
-
 <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
+    <button class="btn" onclick="toggleMode()"><span>Toggle Day/Night</span></button>
+    <button class="btn" onclick="location.href='index.html'"><span>Home</span></button>
+    <button class="btn" onclick="location.href='about.html'"><span>About</span></button>
 </nav>
 
 <h1>QURAN JOURNEY AUDIOS</h1>
 <div id="audio-container"></div>
 
 <script>
-fetch('audio-list.json?v=' + new Date().getTime())
+/* === DAY/NIGHT PERSISTENCE === */
+function applyMode() {
+    if(localStorage.getItem('mode')==='light'){
+        document.body.classList.add('light-mode');
+    } else {
+        document.body.classList.remove('light-mode');
+    }
+}
+function toggleMode(){
+    document.body.classList.toggle('light-mode');
+    if(document.body.classList.contains('light-mode')){
+        localStorage.setItem('mode','light');
+    } else {
+        localStorage.setItem('mode','dark');
+    }
+}
+applyMode();
+
+/* === ORIGINAL AUDIO FETCH LOGIC === */
+fetch('audio-list.json?v=' + new Date().getTime()) // cache-busting
 .then(response => response.json())
 .then(files => {
     const container = document.getElementById('audio-container');
-    const pastelColors = ['#FFDEE9', '#B5FFFC', '#FFF6B5', '#D1FFD6', '#E0D4FF'];
-
     files.forEach((file, index) => {
         const block = document.createElement('div');
         block.className = 'audio-block';
-        block.style.background = pastelColors[index % pastelColors.length] + "55";
 
         const title = document.createElement('div');
         title.className = 'title';
@@ -130,7 +118,17 @@ fetch('audio-list.json?v=' + new Date().getTime())
         container.appendChild(block);
     });
 });
-</script>
 
+/* === PARTICLES === */
+for(let i=0;i<50;i++){
+    const p=document.createElement('div'); p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.top=Math.random()*100+'%';
+    p.style.width=2+Math.random()*4+'px';
+    p.style.height=p.style.width;
+    p.style.animationDuration=5+Math.random()*10+'s';
+    document.body.appendChild(p);
+}
+</script>
 </body>
 </html>
