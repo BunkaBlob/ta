@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quran Audio Collection</title>
+<style>
+/* === BASE BODY === */
+body {
+    margin:0; padding:20px;
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    background:#0b1a38; color:#f5e0a1;
+    transition: background 0.5s, color 0.5s;
+    overflow-x:hidden;
+}
+.light-mode { background:#f5e0a1; color:#0b1a38; }
+
+/* === HEADING === */
+h1 { text-align:center; margin-bottom:30px; font-size:3em; letter-spacing:1px; }
+
+/* === BUTTONS === */
+button {
+    display:inline-block; padding:10px 20px; margin:5px 0;
+    font-weight:bold; font-size:1em; color:#f5e0a1;
+    border:2px solid #f5e0a1; border-radius:50px;
+    background:transparent; cursor:pointer; position:relative; overflow:hidden;
+    transition:0.3s, transform 0.2s;
+}
+button::before {
+    content:''; position:absolute; top:-50%; left:-50%;
+    width:200%; height:200%; background:rgba(245,224,161,0.3);
+    transform:rotate(45deg) translate(-100%,-100%); transition:0.5s; z-index:0;
+}
+button:hover::before { transform:rotate(45deg) translate(0,0); }
+button span { position:relative; z-index:1; }
+.light-mode button { color:#0b1a38; border-color:#0b1a38; }
+.light-mode button::before { background:rgba(11,26,56,0.2); }
+
+/* === AUDIO PLAYER === */
+#audio-container, #controls-container {
+    max-width:700px; margin:0 auto 30px auto;
+}
+#controls { text-align:center; margin-bottom:10px; }
+#progress-container { width:100%; height:10px; background:#ddd; border-radius:5px; cursor:pointer; }
+#progress { height:10px; width:0%; background:#2196f3; border-radius:5px; }
+#time-display { text-align:center; margin-top:5px; }
+
+/* === SURAH LIST === */
+#audio-list button {
+    width:100%; text-align:left;
+    transition: transform 0.2s, background 0.3s, color 0.3s;
+}
+#audio-list button:hover {
+    transform: scale(1.05);
+}
+#audio-list button.active {
+    background:#5a5f12; color:#fff;
+}
+
+/* === PARTICLES === */
+.particle {
+    position: fixed; width:4px; height:4px; background:#f5e0a1;
+    border-radius:50%; pointer-events:none; animation:float 10s linear infinite;
+    opacity:0.7;
+}
+@keyframes float {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); opacity:0.7; }
+    50% { transform: translateY(-600px) translateX(50px) rotate(180deg); opacity:0.4; }
+    100% { transform: translateY(-1200px) translateX(-50px) rotate(360deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<h1>Quran Audio Collection</h1>
+
+<div id="controls-container">
+    <div id="controls">
+        <button id="play-btn"><span>Play</span></button>
+        <button id="pause-btn"><span>Pause</span></button>
+    </div>
+    <div id="progress-container">
+        <div id="progress"></div>
+    </div>
+    <div id="time-display">00:00 / 00:00</div>
+</div>
+
+<audio id="player"></audio>
+
+<div id="audio-list">Loading surahs...</div>
+
+<script>
+// === DAY/NIGHT MODE ===
+function applyMode() {
+    if(localStorage.getItem('mode')==='light'){
+        document.body.classList.add('light-mode');
+    } else {
+        document.body.classList.remove('light-mode');
+    }
+}
+applyMode();
+
+// === PARTICLES ===
+for(let i=0;i<50;i++){
+    const p=document.createElement('div'); p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.top=Math.random()*100+'%';
+    p.style.width=2+Math.random()*4+'px';
+    p.style.height=p.style.width;
+    p.style.animationDuration=5+Math.random()*10+'s';
+    document.body.appendChild(p);
+}
+
+// === AUDIO FUNCTIONALITY ===
+const player = document.getElementById('player');
+const playBtn = document.getElementById('play-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const progressContainer = document.getElementById('progress-container');
+const progress = document.getElementById('progress');
+const timeDisplay = document.getElementById('time-display');
+const audioListContainer = document.getElementById('audio-list');
+
+playBtn.addEventListener('click',()=>player.play());
+pauseBtn.addEventListener('click',()=>player.pause());
+
+// Space bar toggle play/pause
+document.addEventListener('keydown',(e)=>{
+    if(e.code==='Space'){ e.preventDefault(); if(player.paused) player.play(); else player.pause(); }
+});
+
+// Update progress bar & time
+player.addEventListener('timeupdate',()=>{
+    if(player.duration){
+        const percent = (player.currentTime/player.duration)*100;
+        progress.style.width = percent+'%';
+        timeDisplay.textContent = formatTime(player.currentTime)+' / '+formatTime(player.duration);
+    }
+});
+
+// Click progress bar to seek
+progressContainer.addEventListener('click',(e)=>{
+    const rect=progressContainer.getBoundingClientRect();
+    const clickX=e.clientX - rect.left;
+    const width=rect.width;
+    player.currentTime=(clickX/width)*player.duration;
+});
+
+// Format seconds to mm:ss
+function formatTime(seconds){
+    const m = Math.floor(seconds/60).toString().padStart(2,'0');
+    const s = Math.floor(seconds%60).toString().padStart(2,'0');
+    return `${m}:${s}`;
+}
+
+// Load surah list
+async function loadAudioList(){
+    try{
+        const res=await fetch('quran_list.json');
+        const files=await res.json();
+        audioListContainer.innerHTML="";
+        files.forEach(file=>{
+            const displayName=file.replace(/_/g,' ').replace(/\.mp3$/i,'');
+            const btn=document.createElement('button');
+            btn.innerHTML=`<span>${displayName}</span>`;
+            btn.addEventListener('click',()=>{
+                // Remove active from all
+                document.querySelectorAll('#audio-list button').forEach(b=>b.classList.remove('active'));
+                // Set active for clicked
+                btn.classList.add('active');
+                // Play selected surah
+                player.src="quran_audio/"+encodeURIComponent(file);
+                player.play();
+            });
+            audioListContainer.appendChild(btn);
+        });
+    }catch(err){
+        audioListContainer.innerHTML="Failed to load surahs.";
+        console.error(err);
+    }
+}
+loadAudioList();
+</script>
+</body>
+</html>
