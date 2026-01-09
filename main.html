@@ -14,18 +14,22 @@ body {
 h1 { text-align:center; margin:30px 0; font-size:2.5em; letter-spacing:1px; }
 nav { text-align:center; margin-bottom:20px; }
 .audio-block {
-    border-radius:12px; padding:20px; margin:15px auto; max-width:700px;
-    background: rgba(245,224,161,0.1);
+    border-radius:30px; padding:20px; margin:15px auto; max-width:700px;
+    background: rgba(173, 133, 12, 0.1);
     box-shadow:0 4px 20px rgba(0,0,0,0.3);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 .audio-block:hover { transform: scale(1.03); box-shadow:0 8px 30px rgba(245,224,161,0.5); }
-.title { font-weight:bold; margin-bottom:10px; font-size:1.2em; }
-audio { width:100%; border-radius:8px; }
+.title { font-weight:bold; margin-bottom:10px; font-size:2em; }
+audio {
+  width: 100%;
+  zoom: 2;
+}
+
 
 .btn {
     display:inline-block; padding:12px 30px; margin:10px;
-    font-weight:bold; font-size:1em; color:#f5e0a1;
+    font-weight:bold; font-size:1.2em; color:#f5e0a1;
     border:2px solid #f5e0a1; border-radius:50px;
     background:transparent; cursor:pointer; position:relative; overflow:hidden;
     transition: color 0.3s, border-color 0.3s;
