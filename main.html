@@ -26,7 +26,6 @@ audio {
   zoom: 2;
 }
 
-
 .btn {
     display:inline-block; padding:12px 30px; margin:10px;
     font-weight:bold; font-size:1.2em; color:#f5e0a1;
@@ -91,17 +90,20 @@ function toggleMode(){
 applyMode();
 
 /* === ORIGINAL AUDIO FETCH LOGIC === */
-fetch('audio-list.json?v=' + new Date().getTime()) // cache-busting
+fetch('audio-list.json?v=' + new Date().getTime())
 .then(response => response.json())
 .then(files => {
     const container = document.getElementById('audio-container');
+    const total = files.length;      // ✅ added
+    files.reverse();                 // ✅ added
+
     files.forEach((file, index) => {
         const block = document.createElement('div');
         block.className = 'audio-block';
 
         const title = document.createElement('div');
         title.className = 'title';
-        title.textContent = `Thursday Audio – Week ${index+1}`;
+        title.textContent = `Thursday Audio – Week ${total - index}`; // ✅ changed
         block.appendChild(title);
 
         const audio = document.createElement('audio');
